@@ -1,0 +1,18 @@
+quarkus:
+  datasource:
+#    devservices:
+#      image-name: "postgres:14.5"
+    db-kind: postgresql
+    username: postgres
+    password: postgres
+    reactive:
+      url: "postgresql://${DB_HOST:localhost}:5432/blog_db"
+      max-size: 20
+    jdbc:
+      url: "jdbc:postgresql://${DB_HOST:localhost}:5432/blog_db"
+      max-size: 20
+
+  flyway:
+    migrate-at-start: true
+greeting:
+  name: "Bitelchus"
