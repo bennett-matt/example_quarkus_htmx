@@ -1,7 +1,7 @@
 {#include base}
     {#title}Hello {name ?: "Qute"}{/title}
     {#body}
-            <h1>Hello, {currentUser ?: "Guest"}</h1>
+            <h1>Hello, {cdi:authCtx.getCurrentUser().email}</h1>
             <div class="mt-2 flex items-center flex-col">
             {#include PostResource/post_form /}
             <div class="overflow-x-auto">

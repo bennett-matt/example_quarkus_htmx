@@ -1,6 +1,8 @@
 package org.mbennett.authorization
 
+import io.quarkus.elytron.security.common.BcryptUtil
 import io.quarkus.security.AuthenticationFailedException
+import io.quarkus.security.credential.PasswordCredential
 import io.quarkus.security.identity.AuthenticationRequestContext
 import io.quarkus.security.identity.IdentityProvider
 import io.quarkus.security.identity.SecurityIdentity
@@ -9,6 +11,7 @@ import io.quarkus.security.runtime.QuarkusPrincipal
 import io.quarkus.security.runtime.QuarkusSecurityIdentity
 import io.smallrye.mutiny.Uni
 import jakarta.enterprise.context.ApplicationScoped
+import org.mbennett.models.User
 import org.mbennett.repositories.UserRepository
 
 @ApplicationScoped
@@ -19,14 +22,13 @@ class UsernamePasswordIdentityProvider(
         return UsernamePasswordAuthenticationRequest::class.java
     }
 
-//    TODO: need to lookup password and hash password, then compare
     override fun authenticate(
         request: UsernamePasswordAuthenticationRequest?,
         context: AuthenticationRequestContext?
     ): Uni<SecurityIdentity> {
         val username = request?.username
-        val password = request?.password
-        if (username == null || password == null) {
+        val credential = request?.password
+        if (username == null || credential == null) {
             throw AuthenticationFailedException("username or password can not be blank")
         }
 
@@ -35,12 +37,25 @@ class UsernamePasswordIdentityProvider(
             .ifNull()
             .failWith(AuthenticationFailedException("username or password invalid"))
             .onItem()
-            .transform{
-                QuarkusSecurityIdentity.builder()
-                    .setPrincipal(QuarkusPrincipal(username))
-                    .addCredential(password)
-                    .addRole("admin")
-                    .build()
-        }
+            .transform {checkPassword(String(credential.password), it)}
+            .onItem()
+            .ifNull()
+            .failWith(AuthenticationFailedException("username or password invalid"))
+            .onItem()
+            .transform(this::createSecurityIdentity)
     }
+
+    private fun checkPassword(password: String, user: User): User? {
+        if (BcryptUtil.matches(password, user.hashedPassword))
+            return user
+
+        return null
+    }
+
+    private fun createSecurityIdentity(user: User?): SecurityIdentity =
+        QuarkusSecurityIdentity.builder()
+            .setPrincipal(QuarkusPrincipal(user!!.id.toString()))
+            .addAttributes(user.to())
+            .addRole("admin")
+            .build()
 }

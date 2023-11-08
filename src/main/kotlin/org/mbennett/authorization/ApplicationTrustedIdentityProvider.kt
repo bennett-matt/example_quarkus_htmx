@@ -1,5 +1,6 @@
 package org.mbennett.authorization
 
+import io.quarkus.security.AuthenticationFailedException
 import io.quarkus.security.identity.AuthenticationRequestContext
 import io.quarkus.security.identity.IdentityProvider
 import io.quarkus.security.identity.SecurityIdentity
@@ -11,13 +12,11 @@ import io.vertx.mutiny.pgclient.PgPool
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.jboss.logging.Logger
+import org.mbennett.repositories.UserRepository
 
 @ApplicationScoped
-class ApplicationTrustedIdentityProvider(): IdentityProvider<TrustedAuthenticationRequest> {
+class ApplicationTrustedIdentityProvider(private val userRepository: UserRepository): IdentityProvider<TrustedAuthenticationRequest> {
     private val LOG = Logger.getLogger(ApplicationTrustedIdentityProvider::class.java.toString())
-
-    @Inject
-    lateinit var client: PgPool
 
     override fun getRequestType(): Class<TrustedAuthenticationRequest> =
         TrustedAuthenticationRequest::class.java
@@ -26,17 +25,21 @@ class ApplicationTrustedIdentityProvider(): IdentityProvider<TrustedAuthenticati
     override fun authenticate(
         request: TrustedAuthenticationRequest,
         context: AuthenticationRequestContext?
-    ): Uni<SecurityIdentity> {
-        return Uni.createFrom()
-            .item(
+    ): Uni<SecurityIdentity> =
+        userRepository.getUser(request.principal.toLong())
+            .onItem()
+            .ifNull()
+            .failWith(AuthenticationFailedException("no user"))
+            .onItem()
+            .transform{
                 QuarkusSecurityIdentity
                     .builder()
                     .setPrincipal(
-                        QuarkusPrincipal(request.principal.toString())
+                        QuarkusPrincipal(it.id.toString())
                     )
+                    .addAttributes(it.to())
                     .addRole("admin")
                     .build()
-            )
-    }
+            }
 }
 

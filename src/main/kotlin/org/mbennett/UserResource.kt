@@ -2,17 +2,22 @@ package org.mbennett
 
 import io.quarkus.qute.CheckedTemplate
 import io.quarkus.qute.TemplateInstance
+import io.smallrye.mutiny.Uni
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.FormParam
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.UriInfo
+import org.mbennett.repositories.UserRepository
 import java.util.logging.Logger
 
 @Path("/users")
-class UserResource {
+class UserResource(private val userRepository: UserRepository) {
     private val LOG = Logger.getLogger(UserResource::class.java.toString())
 
     @CheckedTemplate
@@ -44,9 +49,26 @@ class UserResource {
         LOG.info("Email: $email, Password: $password")
     }
 
+//    TODO: also want to implement flash messages on success/failures for user
     @POST
     @Path("sign-up")
-    suspend fun signUpPost(@FormParam("name") name: String, @FormParam("email") email: String, @FormParam("password") password: String, @FormParam("confirmPassword") confirmPassword: String) {
-        TODO("implement me")
+    @Transactional
+    fun signUpPost(
+        @FormParam("name") name: String,
+        @FormParam("email") email: String,
+        @FormParam("password") password: String,
+        @FormParam("confirmPassword") confirmPassword: String,
+        @Context uriInfo: UriInfo
+    ): Uni<Response>? {
+        if (password != confirmPassword) {
+            TODO("implement me")
+//            TODO: return response returning the form with errors map, map needs to be name of field mapped to error
+        }
+//        Need to check for failure and handle failure
+        return userRepository.createUser(name, email, password).onItem().transform{
+//            NOTE: assuming there is a user for now, need to handle error next
+            Response.created(uriInfo.absolutePathBuilder.path("/users/login").build()).build()
+        }
+//        TODO("implement me")
     }
 }
