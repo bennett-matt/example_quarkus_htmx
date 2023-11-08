@@ -8,8 +8,7 @@
     <script src="/post.js"></script>
     <script defer src="/webjars/alpinejs/dist/cdn.js"></script>
 </head>
-<body hx-headers='{"{inject:csrf.headerName}":"{inject:csrf.token}"}' hx-boost="true">
-{#include partials/nav /}
-<section>{#insert body}No body{/}</section>
+    <body hx-headers='{"{inject:csrf.headerName}":"{inject:csrf.token}"}' hx-boost="true">
+    <section>{#insert body}No body{/}</section>
 </body>
 </html>

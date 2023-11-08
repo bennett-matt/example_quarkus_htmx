@@ -1,12 +1,27 @@
 {#include base}
     {#title}Hello {name ?: "Qute"}{/title}
     {#body}
-        <h1>Hello <b>{name ?: "Qute"}</b></h1>
-
-        <p>Create your web page using Quarkus RESTEasy & Qute</p>
-        {#for post in posts}
-            <h2>Read: {post.title}</h2>
-            <h5>Description: {post.description}</h5>
-        {/for}
+            <h1>Hello, {currentUser ?: "Guest"}</h1>
+            <div class="mt-2 flex items-center flex-col">
+            {#include PostResource/post_form /}
+            <div class="overflow-x-auto">
+              <table class="table">
+                <!-- head -->
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody id="post-list">
+                {#for post in posts}
+                   {#include PostResource/post post=post /}
+                {/for}
+                </tbody>
+              </table>
+            </div>
+        </div>
     {/body}
 {/include}

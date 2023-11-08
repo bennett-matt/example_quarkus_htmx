@@ -14,6 +14,10 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
+    implementation("io.quarkus:quarkus-liquibase")
+    implementation("io.quarkus:quarkus-security-jpa-reactive")
+    implementation("io.quarkus:quarkus-security")
+    implementation("io.quarkus:quarkus-csrf-reactive")
     implementation("io.quarkus:quarkus-webjars-locator")
     implementation("io.quarkus:quarkus-rest-client-reactive-kotlin-serialization")
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
@@ -24,7 +28,6 @@ dependencies {
     implementation("io.quarkus:quarkus-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
-    implementation("io.quarkus:quarkus-flyway")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("org.webjars.npm:alpinejs:3.13.1")
     implementation("org.webjars.npm:htmx.org:1.9.6")

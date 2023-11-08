@@ -1,0 +1,31 @@
+<form class="card w-96 bg-base-100 shadow-xl" action="/posts" method="POST" hx-swap="beforeend" hx-target="#post-list" hx-replace-url="/blog">
+    <div class="card-body">
+        <div class="mb-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+                Title
+            </label>
+            <input name="title" class="new-post shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Title">
+        </div>
+        <div class="mb-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
+                Description
+            </label>
+            <input name="description" class="new-post shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" type="text" placeholder="Description">
+        </div>
+        <div class="mb-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
+                Type
+            </label>
+            <select name="type" class="new-post shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="type">
+                <option value="Blog">Blog</option>
+                <option value="Course">Course</option>
+                <option value="Lab">Lab</option>
+            </select>
+        </div>
+        <div class="card-actions justify-end">
+            <button class="btn btn-primary" type="submit">
+                Create Post
+            </button>
+        </div>
+    </div>
+</form>

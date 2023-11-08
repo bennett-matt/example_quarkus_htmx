@@ -11,8 +11,16 @@ quarkus:
     jdbc:
       url: "jdbc:postgresql://${DB_HOST:localhost}:5432/blog_db"
       max-size: 20
-
-  flyway:
+  liquibase:
     migrate-at-start: true
+  http:
+    auth:
+      form:
+        enabled: true
+        login-page: /users/login
+        post-location: /users/loginPost
+        username-parameter: email
+        password-parameter: password
+        landing-page: /blog
 greeting:
   name: "Bitelchus"
