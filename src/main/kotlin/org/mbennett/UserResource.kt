@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.UriInfo
+import org.mbennett.models.UserAuthForm
 import org.mbennett.repositories.UserRepository
 import java.util.logging.Logger
 
@@ -25,6 +26,8 @@ class UserResource(private val userRepository: UserRepository) {
         companion object {
             @JvmStatic
             external fun auth(signUp: Boolean): TemplateInstance
+            @JvmStatic
+            external fun form(form: UserAuthForm): TemplateInstance
         }
     }
 
